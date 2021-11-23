@@ -19,7 +19,9 @@ export const UserStorage = ({ children }) => {
       setLogin(false)
       window.localStorage.removeItem('token')
       navigate('/login')
-    }, [navigate])
+    },
+    [navigate],
+  )
 
   async function getUser(token) {
     const { url, options } = USER_GET(token)
@@ -31,7 +33,6 @@ export const UserStorage = ({ children }) => {
 
   async function userLogin(username, password) {
     try {
-
       setError(null)
       setLoading(true)
       const { url, options } = TOKEN_POST({ username, password })
@@ -41,16 +42,11 @@ export const UserStorage = ({ children }) => {
       window.localStorage.setItem('token', token)
       await getUser(token)
       navigate('/conta')
-
-    } catch (error) {
-
-      setError(error.message)
+    } catch (err) {
+      setError(err.message)
       setLogin(false)
-
     } finally {
-
       setLoading(false)
-
     }
   }
 
@@ -65,20 +61,22 @@ export const UserStorage = ({ children }) => {
           const response = await fetch(url, options)
           if (!response.ok) throw new Error('Token inválido')
           await getUser(token)
-        } catch (error) {
+        } catch (err) {
           userLogout()
         } finally {
           setLoading(false)
         }
       } else {
-        setLogin(false);
+        setLogin(false)
       }
     }
     autoLogin()
   }, [userLogout])
 
   return (
-    <UserContext.Provider value={{ userLogin, userLogout, data, error, loading, login }}>
+    <UserContext.Provider
+      value={{ userLogin, userLogout, data, error, loading, login }}
+    >
       {children}
     </UserContext.Provider>
   )
